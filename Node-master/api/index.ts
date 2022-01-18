@@ -37,19 +37,10 @@ app.use(`/${ROUTE_IMAGE}`, ...handlerImage)
 routes.forEach((item) =>
   item.routes.forEach((route) => app.use(item.prefix + route.path, route.route))
 )
-// app.use(function (err: any, req: any, res: any, next: any) {
-//   responseError(res, err)
-//   res.setHeader('Access-Control-Allow-Origin', '*')
-// })
 app.use(function (err: any, req: any, res: any, next: any) {
   responseError(res, err)
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  )
-  next()
 })
+
 app.listen(process.env.PORT, function () {
   console.log(chalk.greenBright(`API listening on port ${process.env.PORT}!`))
 })

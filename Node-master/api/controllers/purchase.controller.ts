@@ -3,9 +3,10 @@ import { STATUS_PURCHASE } from '../constants/purchase'
 import { STATUS } from '../constants/status'
 import { ProductModel } from '../database/models/product.model'
 import { PurchaseModel } from '../database/models/purchase.model'
-import { ErrorHandler, responseSuccess } from '../utils/response'
+import { ErrorHandler, responseSuccess, responseError } from '../utils/response'
 import { handleImageProduct } from './product.controller'
 import { cloneDeep } from 'lodash'
+import { cat } from 'shelljs'
 
 export const addToCart = async (req: Request, res: Response) => {
   const { product_id, buy_count } = req.body

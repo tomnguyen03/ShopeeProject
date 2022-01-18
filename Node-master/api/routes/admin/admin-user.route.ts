@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import userController from '../../controllers/user.controller'
+import * as purchaseController from '../../controllers/purchase.controller'
 import helpersMiddleware from '../../middleware/helpers.middleware'
 import userMiddleware from '../../middleware/user.middleware'
 import authMiddleware from '../../middleware/auth.middleware'
@@ -12,6 +13,7 @@ adminUserRouter.get(
   authMiddleware.verifyAdmin,
   userController.getUsers
 )
+
 adminUserRouter.post(
   '',
   authMiddleware.verifyAccessToken,
