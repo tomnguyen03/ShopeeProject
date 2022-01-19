@@ -84,21 +84,49 @@ export const getSales = async (req: Request, res: Response) => {
 
 // GET MONTHLY INCOME
 export const getInCome = async (req: Request, res: Response) => {
+  const query = req.query.month
+  let income: any = null
   try {
-    const income: any = await PurchaseModel.aggregate([
-      {
-        $group: {
-          _id: 0,
-          totalSaleAmount: { $sum: { $multiply: ['$buy_count', '$price'] } },
+    if (query) {
+      income = await PurchaseModel.aggregate([
+        {
+          $project: {
+            month: { $month: '$createdAt' },
+            buy_count: '$buy_count',
+            price: '$price',
+          },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          totalSaleAmount: '$totalSaleAmount',
+        {
+          $group: {
+            _id: '$month',
+            totalSaleAmount: { $sum: { $multiply: ['$buy_count', '$price'] } },
+          },
         },
-      },
-    ])
+        {
+          $project: {
+            _id: 0,
+            month: '$_id',
+            totalSaleAmount: '$totalSaleAmount',
+          },
+        },
+      ])
+    } else {
+      income = await PurchaseModel.aggregate([
+        {
+          $group: {
+            _id: 0,
+            totalSaleAmount: { $sum: { $multiply: ['$buy_count', '$price'] } },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            totalSaleAmount: '$totalSaleAmount',
+          },
+        },
+      ])
+    }
+
     const response = {
       message: 'Lấy income thành công',
       data: income,
@@ -112,7 +140,6 @@ export const getInCome = async (req: Request, res: Response) => {
 // GET USER ORDER
 export const getUserOrder = async (req: Request, res: Response) => {
   const date: Date = new Date()
-  const lastMonth: Date = new Date(date.setMonth(date.getMonth() - 1))
   const nowMonth: Date = new Date(date.getMonth())
   let query: any = req.query.new
   let condition: any = {
@@ -125,9 +152,7 @@ export const getUserOrder = async (req: Request, res: Response) => {
     {
       $match: { createdAt: { $gte: date } },
     },
-    {
-      $sort: { createdAt: -1 },
-    },
+    { $sort: { createdAt: -1 } },
     {
       $lookup: {
         from: 'users',
@@ -138,18 +163,24 @@ export const getUserOrder = async (req: Request, res: Response) => {
     },
     {
       $group: {
-        _id: { createdAt: '$createdAt', user: '$user' },
+        _id: '$createdAt',
+        user: { $first: '$user' },
         totalPrice: { $sum: { $multiply: ['$buy_count', '$price'] } },
       },
     },
     {
       $project: {
         _id: 0,
-        user: { $first: '$_id.user.name' },
+        user: { $first: '$user.name' },
         totalPrice: '$totalPrice',
         day: {
-          $dateToString: { format: '%d-%m-%Y', date: '$_id.createdAt' },
+          $dateToString: { format: '%d-%m-%Y', date: '$_id' },
         },
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
       },
     },
   ])
@@ -200,7 +231,7 @@ export const getTopCustomer = async (req: Request, res: Response) => {
       },
     },
     {
-      $sort: { totalPrice: -1 },
+      $sort: { totalOrder: -1 },
     },
   ])
 
