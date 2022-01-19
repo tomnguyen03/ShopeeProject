@@ -200,7 +200,7 @@ export const getTopCustomer = async (req: Request, res: Response) => {
       },
     },
     {
-      $sort: { totalOrder: -1 },
+      $sort: { totalPrice: -1 },
     },
   ])
 
