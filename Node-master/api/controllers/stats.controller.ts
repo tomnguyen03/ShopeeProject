@@ -44,7 +44,7 @@ export const getSales = async (req: Request, res: Response) => {
   const nowYear: Date = new Date(date.getFullYear())
   try {
     const sales: any = await PurchaseModel.aggregate([
-      { $match: { createdAt: { $gte: nowYear } } },
+      // { $match: { createdAt: { $lte: nowYear } } },
       {
         $project: {
           month: { $month: '$createdAt' },
@@ -150,16 +150,11 @@ export const getUserOrder = async (req: Request, res: Response) => {
   const date: Date = new Date()
   const nowMonth: Date = new Date(date.getMonth())
   let query: any = req.query.new
-  let condition: any = {
-    status: {
-      $ne: STATUS_PURCHASE.WAIT_FOR_CONFIRMATION,
-    },
-  }
 
   let purchases: any = await PurchaseModel.aggregate([
-    {
-      $match: { createdAt: { $gte: date } },
-    },
+    // {
+    //   $match: { createdAt: { $lte: date } },
+    // },
     { $sort: { createdAt: -1 } },
     {
       $lookup: {
@@ -212,9 +207,9 @@ export const getTopCustomer = async (req: Request, res: Response) => {
   }
 
   let purchases: any = await PurchaseModel.aggregate([
-    {
-      $match: { createdAt: { $gte: date } },
-    },
+    // {
+    //   $match: { createdAt: { $lte: date } },
+    // },
     {
       $lookup: {
         from: 'users',
@@ -239,7 +234,7 @@ export const getTopCustomer = async (req: Request, res: Response) => {
       },
     },
     {
-      $sort: { totalOrder: -1 },
+      $sort: { totalPrice: -1 },
     },
   ])
 
