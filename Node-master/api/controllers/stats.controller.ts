@@ -54,7 +54,7 @@ export const getSales = async (req: Request, res: Response) => {
       },
       {
         $group: {
-          _id: { month: '$month', year: '$year' },
+          _id: { year: '$year', month: '$month' },
           total: { $sum: '$sales' },
         },
       },
@@ -92,21 +92,29 @@ export const getInCome = async (req: Request, res: Response) => {
         {
           $project: {
             month: { $month: '$createdAt' },
+            year: { $year: '$createdAt' },
             buy_count: '$buy_count',
             price: '$price',
           },
         },
         {
           $group: {
-            _id: '$month',
+            _id: { year: '$year', month: '$month' },
             totalSaleAmount: { $sum: { $multiply: ['$buy_count', '$price'] } },
           },
         },
         {
           $project: {
             _id: 0,
-            month: '$_id',
+            year: '$_id.year',
+            month: '$_id.month',
             totalSaleAmount: '$totalSaleAmount',
+          },
+        },
+        {
+          $sort: {
+            year: -1,
+            month: -1,
           },
         },
       ])
