@@ -126,6 +126,9 @@ export const getUserOrder = async (req: Request, res: Response) => {
       $match: { createdAt: { $gte: date } },
     },
     {
+      $sort: { createdAt: -1 },
+    },
+    {
       $lookup: {
         from: 'users',
         localField: 'user',
@@ -142,15 +145,12 @@ export const getUserOrder = async (req: Request, res: Response) => {
     {
       $project: {
         _id: 0,
-        user: '$_id.user.name',
+        user: { $first: '$_id.user.name' },
         totalPrice: '$totalPrice',
         day: {
           $dateToString: { format: '%d-%m-%Y', date: '$_id.createdAt' },
         },
       },
-    },
-    {
-      $sort: { day: -1 },
     },
   ])
 
