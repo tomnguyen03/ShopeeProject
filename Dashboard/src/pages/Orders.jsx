@@ -2,47 +2,35 @@ import React from "react";
 
 import Table from "../components/table/Table";
 
-// import customerList from "../assets/JsonData/customers-list.json";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { HOST } from "../data";
-import { Link } from "react-router-dom";
-export default function Product() {
+import { AuthStr, HOST } from "../data";
+export default function Orders() {
   const [data, setData] = useState([]);
   useEffect(() => {
     axios
-      .get(HOST + "/products")
+      .get(HOST + "/admin/stats/user-orders", { headers: { Authorization: AuthStr } })
       .then((res) => {
-        const products = res.data.data.products;
-        setData(products);
+        const users = res.data.data;
+        setData(users);
       })
       .catch((err) => console.log(err));
   }, []);
-  const customerTableHead = ["", "name", "rating", "quantity", "sold", "view", "price"];
-
   const renderHead = (item, index) => <th key={index}>{item}</th>;
+
+  const customerTableHead = ["", "name", "Price", "Date"];
 
   const renderBody = (item, index) => (
     <tr key={index}>
       <td>{index + 1}</td>
-      <td>{item.name}</td>
-      <td>{item.rating}</td>
-      <td>{item.quantity}</td>
-      <td>{item.sold}</td>
-      <td>{item.view}</td>
-      <td>{item.price}</td>
+      <td>{item.user}</td>
+      <td>{item.totalPrice}</td>
+      <td>{item.day}</td>
     </tr>
   );
   return (
     <div>
-      <h2 className="page-header">products</h2>
-      <div className="add-category">
-        <Link to="/addProducts">
-          <button className="btn-add" type="button">
-            Add Product
-          </button>
-        </Link>
-      </div>
+      <h2 className="page-header">orders</h2>
       <div className="row">
         <div className="col-12">
           <div className="card">

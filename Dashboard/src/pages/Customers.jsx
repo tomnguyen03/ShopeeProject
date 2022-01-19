@@ -8,8 +8,6 @@ import { AuthStr, HOST } from "../data";
 export default function Customers() {
   const [data, setData] = useState([]);
   useEffect(() => {
-    // const AuthStr =
-    //   "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxZTNkNTNmOTZhOTJmMGY3NDc0NDkwYiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZXMiOlsiVXNlciIsIkFkbWluIl0sImNyZWF0ZWRfYXQiOiIyMDIyLTAxLTE3VDEyOjU4OjA1LjQ5MFoiLCJpYXQiOjE2NDI0MjQyODUsImV4cCI6MTY0MzAyOTA4NX0.jeVlBXSjIE1Qrikg73vF-P5982ZcyOV9Kt4GdY-MvRo";
     axios
       .get(HOST + "/admin/users", { headers: { Authorization: AuthStr } })
       .then((res) => {

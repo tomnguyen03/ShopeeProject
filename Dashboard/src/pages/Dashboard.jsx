@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import { Link } from "react-router-dom";
-
 import Chart from "react-apexcharts";
 
 import { useSelector } from "react-redux";
@@ -10,24 +8,12 @@ import StatusCard from "../components/status-card/StatusCard";
 
 import Table from "../components/table/Table";
 
-import Badge from "../components/badge/Badge";
-
-import statusCards from "../assets/JsonData/status-card-data.json";
 import axios from "axios";
 import { AuthStr, HOST } from "../data";
 export default function Dashboard() {
   const chartOptions = {
-    series: [
-      {
-        name: "Income",
-        data: [
-          0, 0, 3150000, 6000000, 19500000, 0, 600000, 9000000, 2560000, 1000000, 25400000,
-          34000000,
-        ],
-      },
-    ],
     options: {
-      color: ["#6ab04c", "#2980b9"],
+      color: ["#6ab04c"],
       chart: {
         background: "transparent",
       },
@@ -94,6 +80,7 @@ export default function Dashboard() {
   const [totalSales, setTotalSales] = useState(0);
   const [topCustomer, setTopCustomer] = useState([]);
   const [latestOrder, setLatestOrder] = useState([]);
+  const [dataChart, setDataChart] = useState([]);
   useEffect(() => {
     axios
       .get(HOST + "/admin/stats/income", { headers: { Authorization: AuthStr } })
@@ -157,6 +144,27 @@ export default function Dashboard() {
         setLatestOrder(data);
       })
       .catch((err) => console.log(err));
+    axios
+      .get(HOST + "/admin/stats/income?month=true", { headers: { Authorization: AuthStr } })
+      .then((res) => {
+        let data = [];
+        let maxMonth = 0;
+        let duLieu = res.data.data;
+        for (let i = 0; i < duLieu.length; i++) {
+          if (duLieu[i].year === 2022) {
+            if (duLieu[i].month > maxMonth) maxMonth = duLieu[i].month;
+            data[duLieu[i].month - 1] = duLieu[i].totalSaleAmount;
+          }
+        }
+        for (let i = 0; i < maxMonth; i++) data[i] = 0;
+        for (let i = 0; i < duLieu.length; i++) {
+          if (duLieu[i].year === 2022) {
+            data[duLieu[i].month - 1] = duLieu[i].totalSaleAmount;
+          }
+        }
+        setDataChart(data);
+      })
+      .catch((err) => console.log(err));
   }, []);
   const statusCardData = [
     {
@@ -168,6 +176,12 @@ export default function Dashboard() {
       icon: "bx bx-dollar-circle",
       count: income.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"),
       title: "Total income",
+    },
+  ];
+  const chartSeries = [
+    {
+      name: "Income",
+      data: dataChart,
     },
   ];
   return (
@@ -198,7 +212,7 @@ export default function Dashboard() {
                       theme: { mode: "light" },
                     }
               }
-              series={chartOptions.series}
+              series={chartSeries}
               type="line"
               height="100%"
             />

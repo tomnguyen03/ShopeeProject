@@ -1,29 +1,9 @@
-.wrapped {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  /* transform: translate(-50%, -50%); */
-  transform: translate3d(-50%, -50%, 0);
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
-  width: 400px;
-  height: 300px;
-  background-color: var(--main-bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 3px;
-  padding: 20px;
-}
-.title {
-  font-size: 24px;
-  margin-bottom: 30px;
-  margin-top: 30px;
-}
-input {
+form input {
   font-size: 16px;
   padding: 10px 15px;
   border: 1px solid var(--txt-color);
   border-radius: 5px;
+  margin: 0 20px;
 }
 button {
   font-size: 16px;
@@ -31,10 +11,17 @@ button {
   background-color: var(--main-color);
   font-weight: 500;
   color: var(--main-bg);
+  border-radius: 5px;
 }
-.button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.icon-back {
+  color: var(--main-color);
+}
+.response {
   margin-top: 40px;
+  border-radius: 5px;
+  font-size: 16px;
+}
+tr:hover {
+  background-color: var(--main-bg) !important;
+  color: var(--txt-color) !important;
 }

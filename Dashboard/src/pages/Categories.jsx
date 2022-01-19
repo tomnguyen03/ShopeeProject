@@ -5,8 +5,8 @@ import Table from "../components/table/Table";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { HOST } from "../data";
-import FormAddCategory from "../components/form/formAddCategory";
 // import { AuthStr } from "../data";
+import { Link } from "react-router-dom";
 export default function Categories() {
   const [data, setData] = useState([]);
   useEffect(() => {
@@ -32,10 +32,11 @@ export default function Categories() {
     <div className="categories">
       <h2 className="page-header">Category</h2>
       <div className="add-category">
-        <button className="btn-add">Add Category</button>
-      </div>
-      <div className="form-add-category">
-        <FormAddCategory />
+        <Link to="/addCategories">
+          <button className="btn-add" type="button">
+            Add Category
+          </button>
+        </Link>
       </div>
       <div className="row">
         <div className="col-12">

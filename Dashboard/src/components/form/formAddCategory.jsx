@@ -1,54 +1,59 @@
 import React from "react";
-import "./category.css";
-import { useForm, Controller } from "react-hook-form";
-import { axios } from "axios";
+import axios from "axios";
 import { AuthStr, HOST } from "../../data";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import "./category.css";
+import { Link } from "react-router-dom";
+export default class FormAddCategory extends React.Component {
+  state = {
+    name: "",
+  };
 
-export default function FormAddCategory() {
-  const { control, handleSubmit, getValues } = useForm({
-    defaultValues: {
-      name: "",
-    },
-  });
-  const handleLogin = async (data) => {
-    const body = {
-      name: data.name,
+  handleChange = (event) => {
+    this.setState({ name: event.target.value });
+  };
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+
+    const user = {
+      name: this.state.name,
     };
+
     axios
-      .post(
-        HOST + "/admin/categories",
-        { name: "Nước hoa" },
-        { headers: { Authorization: AuthStr } }
-      )
+      .post(HOST + "/admin/categories", user, { headers: { Authorization: AuthStr } })
       .then((res) => {
         console.log(res);
+        console.log(res.data);
       })
       .catch((err) => console.log(err));
   };
 
-  return (
-    <div className="wrapped">
-      <div className="title">ADD CATEGORY</div>
-      <form onSubmit={handleSubmit(handleLogin)} noValidate>
-        <div className="formControl">
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <input
-                type="name"
-                name="name"
-                placeholder="Name"
-                onChange={field.onChange}
-                value={getValues("name")}
-              ></input>
-            )}
-          />
+  render() {
+    return (
+      <div>
+        <div className="page-header">
+          <Link to="/categories">
+            <ArrowBackIcon className="icon-back" />
+          </Link>
         </div>
-        <div className="button">
-          <button type="submit">ADD</button>
+        <h2 className="page-header">Add Category</h2>
+        <div className="row">
+          <div className="col-5">
+            <div className="card">
+              <div className="card__body">
+                <form onSubmit={this.handleSubmit}>
+                  <label>
+                    Category Name
+                    <input type="text" name="name" onChange={this.handleChange} />
+                  </label>
+                  <button type="submit">Add</button>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
-      </form>
-    </div>
-  );
+      </div>
+    );
+  }
 }

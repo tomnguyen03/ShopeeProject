@@ -20,11 +20,6 @@
     "icon": "bx bx-cart"
   },
   {
-    "display_name": "Analytics",
-    "route": "/analytics",
-    "icon": "bx bx-bar-chart-alt"
-  },
-  {
     "display_name": "categories",
     "route": "/categories",
     "icon": "bx bx-list-ol"
