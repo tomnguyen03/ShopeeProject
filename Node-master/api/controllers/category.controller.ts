@@ -4,18 +4,25 @@ import { STATUS } from '../constants/status'
 import { CategoryModel } from '../database/models/category.model'
 
 const addCategory = async (req: Request, res: Response) => {
-  const name: string = req.body.name
-  const categoryAdd = await new CategoryModel({ name }).save()
-  const response = {
-    message: 'Tạo Category thành công',
-    data: categoryAdd.toObject({
-      transform: (doc, ret, option) => {
-        delete ret.__v
-        return ret
-      },
-    }),
+  const name: string = req.body.name.trim().replace(/\s+/g, ' ')
+
+  const categories = await CategoryModel.findOne({ name: name }).exec()
+  if (!categories) {
+    const categoryAdd = await new CategoryModel({ name }).save()
+    const response = {
+      message: 'Tạo Category thành công',
+      data: categoryAdd.toObject({
+        transform: (doc, ret, option) => {
+          delete ret.__v
+          return ret
+        },
+      }),
+    }
+    return responseSuccess(res, response)
   }
-  return responseSuccess(res, response)
+  throw new ErrorHandler(STATUS.UNPROCESSABLE_ENTITY, {
+    email: 'Category đã tồn tại',
+  })
 }
 
 const getCategories = async (req: Request, res: Response) => {
