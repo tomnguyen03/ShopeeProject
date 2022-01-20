@@ -7,6 +7,8 @@ import { ErrorHandler, responseSuccess, responseError } from '../utils/response'
 import { handleImageProduct } from './product.controller'
 import { cloneDeep } from 'lodash'
 import { cat } from 'shelljs'
+import * as nodemailer from 'nodemailer'
+import { stringify } from 'querystring'
 
 export const addToCart = async (req: Request, res: Response) => {
   const { product_id, buy_count } = req.body
@@ -79,6 +81,60 @@ export const addToCart = async (req: Request, res: Response) => {
   } else {
     throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy sản phẩm')
   }
+}
+
+export const acceptPurchase = async (req: Request, res: Response) => {
+  const filter = { user: req.params.user_id }
+  const update = { status: STATUS_PURCHASE.WAIT_FOR_GETTING }
+
+  const purchaseInDb: any = await PurchaseModel.findOneAndUpdate(filter, update)
+    .populate('user', { _id: 0, name: 1, email: 1 })
+    .populate('product', { _id: 0, name: 1 })
+    .select({ _id: 0, user: 1, product: 1, price: 1, buy_count: 1, status: 1 })
+    .lean()
+
+  const adminEmail: string = 'keyloggerdoan@gmail.com'
+  const adminPassword: string = 'keylogger'
+  const mailHost: string = 'smtp.gmail.com'
+  const mailPort: number = 587
+  const userEmail = purchaseInDb.user.email
+  const userEmail1 = 'nguyenduytruong252@gmail.com'
+  // const content: string = stringify(purchaseInDb.user)
+
+  // Khởi tạo một thằng transporter object sử dụng chuẩn giao thức truyền tải SMTP với các thông tin cấu hình ở trên.
+  const transporter: any = nodemailer.createTransport({
+    host: mailHost,
+    port: mailPort,
+    secure: false, // nếu các bạn dùng port 465 (smtps) thì để true, còn lại hãy để false cho tất cả các port khác
+    auth: {
+      user: adminEmail,
+      pass: adminPassword,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  })
+  const output = `
+    <h1>Đơn hàng Shopee</h1>
+    <p>Sản phầm : ${purchaseInDb.product.name}</p>
+    <p>Số lượng : ${purchaseInDb.buy_count}</p>
+    <p>Giá : ${purchaseInDb.price}</p>
+    <h3>Đơn hàng đã được xác nhận!</h3>
+  `
+  const options: any = {
+    from: adminEmail, // địa chỉ admin email bạn dùng để gửi
+    to: userEmail, // địa chỉ gửi đến
+    subject: 'Xác nhận đơn hàng shopee', // Tiêu đề của mail
+    html: output,
+  }
+  transporter.sendMail(options)
+  console.log('Da gui email')
+
+  const response = {
+    message: 'Xác nhận đơn thành công',
+    data: purchaseInDb,
+  }
+  return responseSuccess(res, response)
 }
 
 export const updatePurchase = async (req: Request, res: Response) => {
