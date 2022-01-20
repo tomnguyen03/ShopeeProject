@@ -155,7 +155,6 @@ export const getUserOrder = async (req: Request, res: Response) => {
     // {
     //   $match: { createdAt: { $lte: date } },
     // },
-    { $sort: { createdAt: -1 } },
     {
       $lookup: {
         from: 'users',
@@ -165,8 +164,18 @@ export const getUserOrder = async (req: Request, res: Response) => {
       },
     },
     {
+      $project: {
+        user: { $first: '$user' },
+        createdAt: '$createdAt',
+        month: { $month: '$createdAt' },
+        year: { $year: '$createdAt' },
+        buy_count: '$buy_count',
+        price: '$price',
+      },
+    },
+    {
       $group: {
-        _id: '$createdAt',
+        _id: { year: '$year', month: '$month', createdAt: '$createdAt' },
         user: { $first: '$user' },
         totalPrice: { $sum: { $multiply: ['$buy_count', '$price'] } },
       },
@@ -174,16 +183,21 @@ export const getUserOrder = async (req: Request, res: Response) => {
     {
       $project: {
         _id: 0,
-        user: { $first: '$user.name' },
+        user: '$user.name',
         totalPrice: '$totalPrice',
+        year: '$_id.year',
+        month: '$_id.month',
         day: {
-          $dateToString: { format: '%d-%m-%Y', date: '$_id' },
+          $dateToString: { format: '%d-%m-%Y', date: '$_id.createdAt' },
         },
       },
     },
     {
       $sort: {
-        createdAt: -1,
+        year: -1,
+        month: -1,
+        day: -1,
+        totalPrice: -1,
       },
     },
   ])
