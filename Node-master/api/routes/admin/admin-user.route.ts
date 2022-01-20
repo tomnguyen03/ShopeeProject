@@ -32,6 +32,17 @@ adminUserRouter.put(
   helpersMiddleware.entityValidator,
   wrapAsync(userController.updateUser)
 )
+adminUserRouter.put(
+  '/accept-purchase/:user_id',
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyAdmin,
+  helpersMiddleware.idRule('user_id'),
+  helpersMiddleware.idValidator,
+  userMiddleware.updateUserRules(),
+  helpersMiddleware.entityValidator,
+  wrapAsync(purchaseController.acceptPurchase)
+)
+
 adminUserRouter.get(
   '/:user_id',
   authMiddleware.verifyAccessToken,
