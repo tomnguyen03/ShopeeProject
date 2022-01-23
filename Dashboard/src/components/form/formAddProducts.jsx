@@ -75,7 +75,7 @@ export default class FormAddProducts extends React.Component {
             headers: { Authorization: AuthStr },
           })
           .then((res) => {
-            console.log(res);
+            this.props.history.push("/products");
           })
           .catch((err) => console.log(err));
       })

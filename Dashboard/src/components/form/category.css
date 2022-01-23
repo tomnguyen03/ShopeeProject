@@ -25,3 +25,10 @@ tr:hover {
   background-color: var(--main-bg) !important;
   color: var(--txt-color) !important;
 }
+#error-message {
+  color: red;
+  font-style: italic;
+  font-size: 14px;
+  margin-top: 10px;
+  margin-left: 140px;
+}

@@ -23,10 +23,14 @@ export default class FormAddCategory extends React.Component {
     axios
       .post(HOST + "/admin/categories", user, { headers: { Authorization: AuthStr } })
       .then((res) => {
-        console.log(res);
-        console.log(res.data);
+        this.props.history.push("/categories");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        if (err.response.status === 422) {
+          document.getElementById("error-message").innerHTML =
+            "<span>" + err.response.data.data.email + "</span>";
+        }
+      });
   };
 
   render() {
@@ -39,7 +43,7 @@ export default class FormAddCategory extends React.Component {
         </div>
         <h2 className="page-header">Add Category</h2>
         <div className="row">
-          <div className="col-5">
+          <div className="col-12">
             <div className="card">
               <div className="card__body">
                 <form onSubmit={this.handleSubmit}>
@@ -49,6 +53,7 @@ export default class FormAddCategory extends React.Component {
                   </label>
                   <button type="submit">Add</button>
                 </form>
+                <div id="error-message"></div>
               </div>
             </div>
           </div>
