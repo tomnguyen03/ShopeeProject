@@ -33,10 +33,10 @@ adminUserRouter.put(
   wrapAsync(userController.updateUser)
 )
 adminUserRouter.put(
-  '/accept-purchase/:user_id',
+  '/accept-purchase/:purchase_id',
   authMiddleware.verifyAccessToken,
   authMiddleware.verifyAdmin,
-  helpersMiddleware.idRule('user_id'),
+  helpersMiddleware.idRule('purchase_id'),
   helpersMiddleware.idValidator,
   userMiddleware.updateUserRules(),
   helpersMiddleware.entityValidator,

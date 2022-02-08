@@ -165,7 +165,9 @@ export const getUserOrder = async (req: Request, res: Response) => {
     },
     {
       $project: {
+        purcharse_id: '$_id',
         user: { $first: '$user' },
+        status: '$status',
         createdAt: '$createdAt',
         month: { $month: '$createdAt' },
         year: { $year: '$createdAt' },
@@ -175,14 +177,21 @@ export const getUserOrder = async (req: Request, res: Response) => {
     },
     {
       $group: {
-        _id: { year: '$year', month: '$month', createdAt: '$createdAt' },
+        _id: {
+          purcharse_id: '$purcharse_id',
+          year: '$year',
+          month: '$month',
+          createdAt: '$createdAt',
+        },
         user: { $first: '$user' },
+        status: { $first: '$status' },
         totalPrice: { $sum: { $multiply: ['$buy_count', '$price'] } },
       },
     },
     {
       $project: {
         _id: 0,
+        purcharse_id: '$_id.purcharse_id',
         user: '$user.name',
         totalPrice: '$totalPrice',
         year: '$_id.year',
@@ -190,6 +199,7 @@ export const getUserOrder = async (req: Request, res: Response) => {
         day: {
           $dateToString: { format: '%d-%m-%Y', date: '$_id.createdAt' },
         },
+        status: '$status',
       },
     },
     {

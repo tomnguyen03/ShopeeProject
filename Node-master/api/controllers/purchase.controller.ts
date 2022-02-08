@@ -84,10 +84,14 @@ export const addToCart = async (req: Request, res: Response) => {
 }
 
 export const acceptPurchase = async (req: Request, res: Response) => {
-  const filter = { user: req.params.user_id }
+  const filter = { _id: req.params.purchase_id }
   const update = { status: STATUS_PURCHASE.WAIT_FOR_GETTING }
 
-  const purchaseInDb: any = await PurchaseModel.findOneAndUpdate(filter, update)
+  const purchaseInDb1: any = await PurchaseModel.findOneAndUpdate(
+    filter,
+    update
+  )
+  const purchaseInDb: any = await PurchaseModel.findOne(filter)
     .populate('user', { _id: 0, name: 1, email: 1 })
     .populate('product', { _id: 0, name: 1 })
     .select({ _id: 0, user: 1, product: 1, price: 1, buy_count: 1, status: 1 })
@@ -98,7 +102,7 @@ export const acceptPurchase = async (req: Request, res: Response) => {
   const mailHost: string = 'smtp.gmail.com'
   const mailPort: number = 587
   const userEmail = purchaseInDb.user.email
-  const userEmail1 = 'nguyenduytruong252@gmail.com'
+  // const userEmail1 = 'nguyenduytruong252@gmail.com'
   // const content: string = stringify(purchaseInDb.user)
 
   // Khởi tạo một thằng transporter object sử dụng chuẩn giao thức truyền tải SMTP với các thông tin cấu hình ở trên.
